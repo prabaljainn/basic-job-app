@@ -4,7 +4,7 @@ const connectDB = require("./config/dbConfig");
 const User = require("./model/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const auth = require("./middleware/authMiddleware");
 // app
 const app = express();
 connectDB();
@@ -39,7 +39,7 @@ app.post("/register", async (req, res) => {
       },
       process.env.TOKEN_KEY,
       {
-        expiresIn: "1m",
+        expiresIn: "10m",
       }
     );
     user.token = jwtToken;
@@ -68,7 +68,7 @@ app.post("/login", async (req, res) => {
         },
         process.env.TOKEN_KEY,
         {
-          expiresIn: "1m",
+          expiresIn: "10m",
         }
       );
       user.token = jwtToken;
@@ -79,6 +79,13 @@ app.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).json(err);
   }
+});
+
+app.get("/welcome", auth, (req, res) => {
+  res.status(200).send("Welcome");
+});
+app.get("/home", (req, res) => {
+  res.status(200).send("Home");
 });
 
 module.exports = app;
